@@ -24,8 +24,20 @@ public class Product {
 
     public Product() {}
 
+    public Product(String name, String company) {
+        this.name = name;
+        this.company = company;
+    }
+
+    public Product(String name, String description, String company) {
+        this.name = name;
+        this.description = description;
+        this.company = company;
+    }
+
     // --- Getters and Setters ---
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

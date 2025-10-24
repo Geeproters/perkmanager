@@ -24,8 +24,15 @@ public class Membership {
 
     public Membership() {}
 
+    public Membership(String type, String organizationName, String description) {
+        this.type = type;
+        this.organizationName = organizationName;
+        this.description = description;
+    }
+
     // --- Getters and Setters ---
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }

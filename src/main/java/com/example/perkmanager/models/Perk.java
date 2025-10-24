@@ -1,7 +1,8 @@
 package com.example.perkmanager.models;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,34 +14,33 @@ public class Perk {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Description or benefit of the perk, e.g., "10% off next flight"
-    @Column(name = "benefit", nullable = false)
+    // Description of the benefit, e.g., "10% off next flight"
+    @Column(nullable = false)
     private String benefit;
 
     // Optional expiry date
-    @Column(name = "expiry_date")
-    private LocalDate expiryDate;
+    @Temporal(TemporalType.DATE)
+    @Column(nullable = true)
+    private Calendar expiryDate;
 
-    // Optional region(s) — could later be normalized to a Region table
-    @Column(name = "region")
+    // Region where the perk applies
+    @Column(nullable = true)
     private String region;
 
-    // Many perks can be associated with one membership
+    // Relationships
     @ManyToOne
     @JoinColumn(name = "membership_id", nullable = false)
     private Membership membership;
 
-    // Many perks can be associated with one product
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    // Account that created the perk
     @ManyToOne
-    @JoinColumn(name = "creator_id", nullable = false)
+    @JoinColumn(name = "creator_id")
     private Account creator;
 
-    // Users who upvoted this perk
+    // Upvotes
     @ManyToMany
     @JoinTable(
             name = "perk_upvotes",
@@ -49,7 +49,7 @@ public class Perk {
     )
     private Set<Account> upvotedBy = new HashSet<>();
 
-    // Users who downvoted this perk
+    // Downvotes
     @ManyToMany
     @JoinTable(
             name = "perk_downvotes",
@@ -58,32 +58,72 @@ public class Perk {
     )
     private Set<Account> downvotedBy = new HashSet<>();
 
+    // --- Constructors ---
     public Perk() {}
 
-    // --- Getters and Setters ---
-    public Long getId() { return id; }
+    public Perk(Membership membership, Product product, String benefit) {
+        this.membership = membership;
+        this.product = product;
+        this.benefit = benefit;
+        this.expiryDate = new GregorianCalendar(); // default to "now"
+    }
 
+    // --- ID ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    // --- Benefit ---
     public String getBenefit() { return benefit; }
     public void setBenefit(String benefit) { this.benefit = benefit; }
 
-    public LocalDate getExpiryDate() { return expiryDate; }
-    public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
+    // --- Expiry Date ---
+    public Calendar getExpiryDate() { return expiryDate; }
+    public void setExpiryDate(Calendar expiryDate) { this.expiryDate = expiryDate; }
 
+    // --- Region ---
     public String getRegion() { return region; }
     public void setRegion(String region) { this.region = region; }
 
+    // --- Membership ---
     public Membership getMembership() { return membership; }
     public void setMembership(Membership membership) { this.membership = membership; }
 
+    // --- Product ---
     public Product getProduct() { return product; }
     public void setProduct(Product product) { this.product = product; }
 
+    // --- Creator ---
     public Account getCreator() { return creator; }
     public void setCreator(Account creator) { this.creator = creator; }
 
-    public Set<Account> getUpvotedBy() { return upvotedBy; }
-    public void setUpvotedBy(Set<Account> upvotedBy) { this.upvotedBy = upvotedBy; }
+    // --- Upvotes ---
+    public int getUpvotes() { return upvotedBy.size(); }
 
-    public Set<Account> getDownvotedBy() { return downvotedBy; }
-    public void setDownvotedBy(Set<Account> downvotedBy) { this.downvotedBy = downvotedBy; }
+    public Set<Account> getUpvoteList() { return upvotedBy; }
+
+    public void setUpvoteList(Set<Account> upvoteList) { this.upvotedBy = upvoteList; }
+
+    public void addUpvote(Account account) { upvotedBy.add(account); }
+
+    public boolean removeUpvote(Account account) { return upvotedBy.remove(account); }
+
+    // --- Downvotes ---
+    public int getDownvotes() { return downvotedBy.size(); }
+
+    public Set<Account> getDownvoteList() { return downvotedBy; }
+
+    public void setDownvoteList(Set<Account> downvoteList) { this.downvotedBy = downvoteList; }
+
+    public void addDownvote(Account account) { downvotedBy.add(account); }
+
+    public boolean removeDownvote(Account account) { return downvotedBy.remove(account); }
+
+    // --- Derived Metrics ---
+    public int getRating() {
+        return getUpvotes() - getDownvotes();
+    }
+
+    public int getTotalRatings() {
+        return getUpvotes() + getDownvotes();
+    }
 }
