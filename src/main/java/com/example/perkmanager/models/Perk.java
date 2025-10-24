@@ -15,16 +15,16 @@ public class Perk {
     private Long id;
 
     // Description of the benefit, e.g., "10% off next flight"
-    @Column(nullable = false)
+    @Column(name = "benefit", nullable = false)
     private String benefit;
 
     // Optional expiry date
     @Temporal(TemporalType.DATE)
-    @Column(nullable = true)
+    @Column(name = "expiry_date")
     private Calendar expiryDate;
 
     // Region where the perk applies
-    @Column(nullable = true)
+    @Column(name = "region")
     private String region;
 
     // Relationships

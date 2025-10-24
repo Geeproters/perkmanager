@@ -36,7 +36,6 @@ class MembershipTest {
         assertEquals("Store Membership", membership.getType());
         assertEquals("West Jet", membership.getOrganizationName());
         assertEquals("West Jet Rewards Member", membership.getDescription());
-
     }
 
     @Test

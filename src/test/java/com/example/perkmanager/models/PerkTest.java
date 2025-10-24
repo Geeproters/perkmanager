@@ -12,8 +12,6 @@ class PerkTest {
     private Product product1;
     private Perk perk;
 
-
-
     @BeforeEach
     void setUp() {
         membership1 = new Membership("Airline Loyalty Program", "West Jet", "West Jet Rewards Member");
